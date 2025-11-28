@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/knitting?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: knitter
+    password: "2486!"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    time-zone: Asia/Seoul
+server:
+  port: 8080
+  timezone: Asia/Seoul
+
+# [설명] 위 설정에서 username, password는 실제 MySQL 계정 정보로 변경하세요.
+# JPA ddl-auto: update는 개발용이며, 운영 환경에서는 적절히 변경하세요.
+# 포트는 3000번으로 변경되었습니다. 프론트엔드와 동일하게 맞추려면 프록시 설정도 3000번으로 변경하세요.
+# JVM 타임존도 KST로 지정하려면 아래 옵션을 VM 옵션에 추가하세요:
+# -Duser.timezone=Asia/Seoul
