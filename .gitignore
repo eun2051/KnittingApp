@@ -1,0 +1,33 @@
+# 백엔드 빌드/캐시/임시파일
+/backend/build/
+/backend/bin/
+/backend/.gradle/
+/backend/*.log
+
+# 프론트엔드 빌드/캐시/임시파일
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env
+
+# macOS/Windows 임시파일
+.DS_Store
+Thumbs.db
+
+# IDE/에디터 설정(팀 공통만 올릴 것)
+.vscode/
+.idea/
+.github/
+node_modules/
+.vite/
+# 기타
+*.iml
+
+# 환경설정/민감정보 예시
+*.env
+application-local.yml
+application-prod.yml
+
+# npm/yarn lock 파일(팀 규칙에 따라)
+# package-lock.json
+# yarn.lock
+
