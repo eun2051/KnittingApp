@@ -37,7 +37,7 @@ public class DailyLogService {
         }
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
-        List<DailyLog> logs = dailyLogRepository.findByProjectId(project.getId());
+        List<DailyLog> logs = dailyLogRepository.findByProject_Id(project.getId());
         System.out.println("[DEBUG] getDailyLogs: projectId=" + projectId + ", logs.size=" + logs.size());
         /**
          * [디버그] getDailyLogs 호출 시 DB에서 실제로 조회되는 값 로그 추가
@@ -63,7 +63,7 @@ public class DailyLogService {
     @Transactional
     public DailyLogResponseDTO incrementTodayRow(Long projectId) {
         LocalDate today = LocalDate.now();
-        DailyLog log = dailyLogRepository.findByProjectIdAndDate(projectId, today).orElse(null);
+        DailyLog log = dailyLogRepository.findByProject_IdAndDate(projectId, today).orElse(null);
         int newRows = (log != null ? log.getRowsWorked() : 0) + 1;
         // 0 미만 불가(푸르시오 유효성)
         if (newRows < 0) newRows = 0;
@@ -77,9 +77,12 @@ public class DailyLogService {
      * saveAndFlush로 DB 즉시 반영
      */
     public DailyLog upsertDailyLog(Long projectId, LocalDate date, int rowsWorked) {
-        DailyLog log = dailyLogRepository.findByProjectIdAndDate(projectId, date).orElse(null);
+        DailyLog log = dailyLogRepository.findByProject_IdAndDate(projectId, date).orElse(null);
         if (log == null) {
-            log = new DailyLog(projectId, date, rowsWorked);
+            // DailyLog 생성 시 projectId 대신 Project 객체를 넘김
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
+            log = new DailyLog(project, date, rowsWorked);
         } else {
             // 기존 값 무시, 마지막 입력값으로 덮어쓰기
             log.setRowsWorked(rowsWorked);
@@ -93,7 +96,7 @@ public class DailyLogService {
      */
     public DailyLogResponseDTO decrementTodayRow(Long projectId) {
         LocalDate today = LocalDate.now();
-        DailyLog log = dailyLogRepository.findByProjectIdAndDate(projectId, today).orElse(null);
+        DailyLog log = dailyLogRepository.findByProject_IdAndDate(projectId, today).orElse(null);
         int newRows = (log != null ? log.getRowsWorked() : 0) - 1;
         if (newRows < 0) newRows = 0;
         DailyLog upserted = upsertDailyLog(projectId, today, newRows);
@@ -112,7 +115,7 @@ public class DailyLogService {
         LocalDate logDate = (dto.date() != null) ? dto.date() : LocalDate.now();
         if (logDate == null) logDate = LocalDate.now();
         System.out.println("[DEBUG] UPSERT 직전: projectId=" + projectId + ", logDate=" + logDate + ", rowsWorked=" + dto.rowsWorked());
-        DailyLog log = dailyLogRepository.findByProjectIdAndDate(project.getId(), logDate)
+        DailyLog log = dailyLogRepository.findByProject_IdAndDate(project.getId(), logDate)
                 .orElse(null);
         System.out.println("[DEBUG] findByProjectIdAndDate 결과: " + (log != null ? ("id=" + log.getId() + ", date=" + log.getDate() + ", rowsWorked=" + log.getRowsWorked()) : "null"));
         // 음수도 허용 (실수 입력 취소/푸르시오 용도)
@@ -120,7 +123,7 @@ public class DailyLogService {
             throw new IllegalArgumentException("작업 단수는 필수입니다.");
         }
         if (log == null) {
-            log = new DailyLog(projectId, (logDate != null ? logDate : LocalDate.now()), dto.rowsWorked());
+            log = new DailyLog(project, (logDate != null ? logDate : LocalDate.now()), dto.rowsWorked());
             dailyLogRepository.saveAndFlush(log);
             System.out.println("[DEBUG] 새 DailyLog 생성 및 저장: rowsWorked=" + log.getRowsWorked() + ", projectId=" + log.getProjectId() + ", date=" + log.getDate());
         } else {
@@ -130,7 +133,7 @@ public class DailyLogService {
             System.out.println("[DEBUG] 기존 DailyLog 수정 및 저장(누적): rowsWorked=" + log.getRowsWorked() + ", projectId=" + log.getProjectId() + ", date=" + log.getDate());
         }
         // 프로젝트 currentRows를 전체 DailyLog 누적 합산값으로 갱신 (날짜가 바뀌어도 리셋되지 않음)
-        List<DailyLog> allLogs = dailyLogRepository.findByProjectId(project.getId());
+        List<DailyLog> allLogs = dailyLogRepository.findByProject_Id(project.getId());
         int totalRows = allLogs.stream().mapToInt(DailyLog::getRowsWorked).sum();
         project.setCurrentRows(totalRows);
         projectRepository.saveAndFlush(project);

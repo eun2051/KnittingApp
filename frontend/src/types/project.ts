@@ -68,6 +68,12 @@ export interface ProjectRequest {
   patternId?: number;
   imageUrl?: string;
   notes?: string;
+  // 실/바늘/도안 정보 추가
+  yarnName?: string;
+  needleType?: string;
+  needleSize?: number;
+  patternLinkUrl?: string;
+  patternPdfUrl?: string;
 }
 
 // 작업 일지 타입

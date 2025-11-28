@@ -30,13 +30,13 @@ public class Project {
     @Embedded
     private Gauge gauge;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Yarn yarn;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Needle needle;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Pattern pattern;
     
     @Column(name = "project_image_url")

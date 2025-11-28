@@ -14,13 +14,11 @@ import java.util.Optional;
  */
 public interface DailyLogRepository extends JpaRepository<DailyLog, Long> {
     Optional<DailyLog> findByProjectAndDate(Project project, LocalDate date);
+    List<DailyLog> findByProject(Project project);
+    List<DailyLog> findByProject_Id(Long projectId);
 
     /**
      * 프로젝트ID와 날짜로 작업 일지 1개 조회 (UPSERT용)
      */
-
-    /**
-     * 프로젝트ID로 작업 일지 목록 조회 (날짜별 합산)
-     */
-    List<DailyLog> findByProject(Project project);
+    Optional<DailyLog> findByProject_IdAndDate(Long projectId, LocalDate date);
 }

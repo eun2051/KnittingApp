@@ -40,40 +40,29 @@ public class ProjectService {
         project.setGauge(dto.gauge());
         project.setImageUrl(dto.imageUrl());
         project.setNotes(dto.notes());
-        // 실/바늘/도안 정보 직접 저장
-        if (dto.yarnName() != null) { project.setYarn(new Yarn()); project.getYarn().setName(dto.yarnName()); }
-        if (dto.needleType() != null) { project.setNeedle(new Needle()); project.getNeedle().setType(dto.needleType()); }
-        if (dto.needleSize() != null) {
-            if (project.getNeedle() == null) project.setNeedle(new Needle());
-            project.getNeedle().setSize(dto.needleSize());
+        // 실 정보 저장
+        if (dto.yarnName() != null && !dto.yarnName().isBlank()) {
+            Yarn yarn = new Yarn();
+            yarn.setName(dto.yarnName());
+            project.setYarn(yarn);
         }
-        if (dto.patternLinkUrl() != null || dto.patternPdfUrl() != null) {
+        // 바늘 정보 저장
+        if ((dto.needleType() != null && !dto.needleType().isBlank()) || dto.needleSize() != null) {
+            Needle needle = new Needle();
+            if (dto.needleType() != null) needle.setType(dto.needleType());
+            if (dto.needleSize() != null) needle.setSize(dto.needleSize());
+            project.setNeedle(needle);
+        }
+        // 도안 정보 저장
+        if ((dto.patternLinkUrl() != null && !dto.patternLinkUrl().isBlank()) || (dto.patternPdfUrl() != null && !dto.patternPdfUrl().isBlank()) || (dto.patternName() != null && !dto.patternName().isBlank())) {
             Pattern pattern = new Pattern();
+            if (dto.patternName() != null) pattern.setName(dto.patternName());
             if (dto.patternLinkUrl() != null) pattern.setLinkUrl(dto.patternLinkUrl());
             if (dto.patternPdfUrl() != null) pattern.setPdfUrl(dto.patternPdfUrl());
             project.setPattern(pattern);
         }
         Project saved = projectRepository.save(project);
-        return new ProjectResponseDTO(
-            saved.getId(),
-            saved.getName(),
-            saved.getStatus(),
-            saved.getStartDate(),
-            saved.getEndDate(),
-            saved.getTargetRows(),
-            saved.getCurrentRows(),
-            saved.getGauge(),
-            saved.getYarn() != null ? saved.getYarn().getName() : null,
-            saved.getNeedle() != null ? saved.getNeedle().getType() : null,
-            saved.getNeedle() != null ? saved.getNeedle().getSize() : null,
-            saved.getPattern() != null ? saved.getPattern().getName() : null,
-            saved.getPattern() != null ? saved.getPattern().getPdfUrl() : null,
-            saved.getPattern() != null ? saved.getPattern().getLinkUrl() : null,
-            saved.getImageUrl(),
-            saved.getNotes(),
-            List.of(),
-            0
-        );
+        return toResponseDTO(saved);
     }
 
     @Transactional(readOnly = true)
@@ -131,27 +120,26 @@ public class ProjectService {
         if (dto.gauge() != null) project.setGauge(dto.gauge());
         if (dto.imageUrl() != null) project.setImageUrl(dto.imageUrl());
         if (dto.notes() != null) project.setNotes(dto.notes());
-        Project saved = projectRepository.save(project); // save()는 null 반환하지 않음
-        return new ProjectResponseDTO(
-            saved.getId(),
-            saved.getName(),
-            saved.getStatus(),
-            saved.getStartDate(),
-            saved.getEndDate(),
-            saved.getTargetRows(),
-            saved.getCurrentRows(),
-            saved.getGauge(),
-            saved.getYarn() != null ? saved.getYarn().getName() : null,
-            saved.getNeedle() != null ? saved.getNeedle().getType() : null,
-            saved.getNeedle() != null ? saved.getNeedle().getSize() : null,
-            saved.getPattern() != null ? saved.getPattern().getName() : null,
-            saved.getPattern() != null ? saved.getPattern().getPdfUrl() : null,
-            saved.getPattern() != null ? saved.getPattern().getLinkUrl() : null,
-            saved.getImageUrl(),
-            saved.getNotes(),
-            List.of(),
-            0
-        );
+        // 실 정보 수정
+        if (dto.yarnName() != null && !dto.yarnName().isBlank()) {
+            if (project.getYarn() == null) project.setYarn(new Yarn());
+            project.getYarn().setName(dto.yarnName());
+        }
+        // 바늘 정보 수정
+        if ((dto.needleType() != null && !dto.needleType().isBlank()) || dto.needleSize() != null) {
+            if (project.getNeedle() == null) project.setNeedle(new Needle());
+            if (dto.needleType() != null) project.getNeedle().setType(dto.needleType());
+            if (dto.needleSize() != null) project.getNeedle().setSize(dto.needleSize());
+        }
+        // 도안 정보 수정
+        if ((dto.patternLinkUrl() != null && !dto.patternLinkUrl().isBlank()) || (dto.patternPdfUrl() != null && !dto.patternPdfUrl().isBlank()) || (dto.patternName() != null && !dto.patternName().isBlank())) {
+            if (project.getPattern() == null) project.setPattern(new Pattern());
+            if (dto.patternName() != null) project.getPattern().setName(dto.patternName());
+            if (dto.patternLinkUrl() != null) project.getPattern().setLinkUrl(dto.patternLinkUrl());
+            if (dto.patternPdfUrl() != null) project.getPattern().setPdfUrl(dto.patternPdfUrl());
+        }
+        Project saved = projectRepository.save(project);
+        return toResponseDTO(saved);
     }
 
     /**
@@ -204,12 +192,12 @@ public class ProjectService {
             project.getTargetRows(),
             project.getCurrentRows(),
             project.getGauge(),
-            project.getYarn() != null ? project.getYarn().getName() : null,
-            project.getNeedle() != null ? project.getNeedle().getType() : null,
-            project.getNeedle() != null ? project.getNeedle().getSize() : null,
-            project.getPattern() != null ? project.getPattern().getName() : null,
-            project.getPattern() != null ? project.getPattern().getPdfUrl() : null,
-            project.getPattern() != null ? project.getPattern().getLinkUrl() : null,
+            project.getYarn() != null && project.getYarn().getName() != null && !project.getYarn().getName().isBlank() ? project.getYarn().getName() : null,
+            project.getNeedle() != null && project.getNeedle().getType() != null && !project.getNeedle().getType().isBlank() ? project.getNeedle().getType() : null,
+            project.getNeedle() != null && project.getNeedle().getSize() != null ? project.getNeedle().getSize() : null,
+            project.getPattern() != null && project.getPattern().getName() != null && !project.getPattern().getName().isBlank() ? project.getPattern().getName() : null,
+            project.getPattern() != null && project.getPattern().getPdfUrl() != null && !project.getPattern().getPdfUrl().isBlank() ? project.getPattern().getPdfUrl() : null,
+            project.getPattern() != null && project.getPattern().getLinkUrl() != null && !project.getPattern().getLinkUrl().isBlank() ? project.getPattern().getLinkUrl() : null,
             project.getImageUrl(),
             project.getNotes(),
             logs,

@@ -15,6 +15,15 @@ const ProjectDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false); // 저장 완료 안내
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    yarnName: '',
+    needleType: '',
+    needleSize: '',
+    patternName: '',
+    patternLinkUrl: '',
+    patternPdfUrl: ''
+  });
 
   // 오늘 날짜를 KST(한국 표준시) 기준 YYYY-MM-DD로 반환
   const getToday = () => {
@@ -79,6 +88,50 @@ const ProjectDetailPage = () => {
     setTodayRows('');
     // 안내 메시지 1.5초 후 자동 숨김
     setTimeout(() => setSaveSuccess(false), 1500);
+  };
+
+  const openEditModal = () => {
+    if (!project) return;
+    setEditForm({
+      yarnName: project.yarnName || '',
+      needleType: project.needleType || '',
+      needleSize: project.needleSize ? String(project.needleSize) : '',
+      patternName: project.patternName || '',
+      patternLinkUrl: project.patternLinkUrl || '',
+      patternPdfUrl: project.patternPdfUrl || ''
+    });
+    setEditOpen(true);
+  };
+
+  const handleEditSave = async () => {
+    if (!project) return;
+    try {
+      await fetch(`/api/projects/${project.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: project.name,
+          status: project.status,
+          startDate: project.startDate,
+          endDate: project.endDate,
+          targetRows: project.targetRows,
+          currentRows: project.currentRows,
+          gauge: project.gauge,
+          yarnName: editForm.yarnName,
+          needleType: editForm.needleType,
+          needleSize: editForm.needleSize ? Number(editForm.needleSize) : null,
+          patternName: editForm.patternName,
+          patternLinkUrl: editForm.patternLinkUrl,
+          patternPdfUrl: editForm.patternPdfUrl,
+          imageUrl: project.imageUrl,
+          notes: project.notes
+        })
+      });
+      setEditOpen(false);
+      refreshProject();
+    } catch (e) {
+      alert('수정에 실패했습니다.');
+    }
   };
 
   if (loading) {
@@ -186,9 +239,18 @@ const ProjectDetailPage = () => {
         {/* 첨부 이미지와 완전히 동일한 연핑크 폭신폭신 프로젝트 정보 상자 */}
         <div className="w-full mx-auto mb-4 p-8 rounded-[2.5rem] bg-gradient-to-br from-[#fff6fa] to-[#fbeaf3] border-[2px] border-[#fcd6e1] flex flex-col items-start">
           <div className="flex flex-col gap-2 w-full items-start">
-            <div className="text-[#d8a7b8] font-semibold text-lg leading-tight">실: <span className="text-[#e573a7] font-bold">{project.yarnName || '입력 없음'}</span></div>
-            <div className="text-[#d8a7b8] font-semibold text-lg leading-tight">바늘: <span className="text-[#e573a7] font-bold">{project.needleType} {project.needleSize ? `(${project.needleSize}mm)` : ''}</span></div>
-            <div className="text-[#d8a7b8] font-semibold text-lg leading-tight">도안: {project.patternLinkUrl && (<a href={project.patternLinkUrl} target="_blank" rel="noopener noreferrer" className="text-[#e573a7] underline font-bold ml-1">링크</a>)}{project.patternPdfUrl && (<a href={project.patternPdfUrl} target="_blank" rel="noopener noreferrer" className="text-[#e573a7] underline font-bold ml-2">PDF</a>)}{!project.patternLinkUrl && !project.patternPdfUrl && <span className="text-[#e573a7] font-bold">입력 없음</span>}</div>
+            <div className="text-[#d8a7b8] font-semibold text-lg leading-tight">
+              실: <span className="text-[#e573a7] font-bold">{project.yarnName && project.yarnName.trim() !== "" ? project.yarnName : '입력 없음'}</span>
+            </div>
+            <div className="text-[#d8a7b8] font-semibold text-lg leading-tight">
+              바늘: <span className="text-[#e573a7] font-bold">{project.needleType && project.needleType.trim() !== "" ? project.needleType : '입력 없음'}{project.needleSize ? `(${project.needleSize}mm)` : ''}</span>
+            </div>
+            <div className="text-[#d8a7b8] font-semibold text-lg leading-tight">
+              도안: {project.patternName && project.patternName.trim() !== "" ? <span className="text-[#e573a7] font-bold">{project.patternName}</span> : null}
+              {project.patternLinkUrl && (<a href={project.patternLinkUrl} target="_blank" rel="noopener noreferrer" className="text-[#e573a7] underline font-bold ml-1">링크</a>)}
+              {project.patternPdfUrl && (<a href={project.patternPdfUrl} target="_blank" rel="noopener noreferrer" className="text-[#e573a7] underline font-bold ml-2">PDF</a>)}
+              {!project.patternName && !project.patternLinkUrl && !project.patternPdfUrl && <span className="text-[#e573a7] font-bold">입력 없음</span>}
+            </div>
           </div>
         </div>
         {/* 진행 단수 꺾은선 그래프: 내부 상자만 남김, 바깥 상자 제거 */}
@@ -198,7 +260,7 @@ const ProjectDetailPage = () => {
         <div className="flex justify-center gap-4 mt-8">
           <button
             className="fluffy-btn bg-pink-200 text-pink-600 font-bold px-6 py-2 rounded-2xl shadow-cute hover:bg-pink-300 hover:text-white transition"
-            onClick={() => navigate(`/project/edit/${project.id}`)}
+            onClick={openEditModal}
           >
             편집
           </button>
@@ -219,6 +281,23 @@ const ProjectDetailPage = () => {
             삭제
           </button>
         </div>
+        {editOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+            <div className="bg-white rounded-2xl p-8 shadow-lg w-[400px] flex flex-col gap-4">
+              <h2 className="text-xl font-bold text-pink-600 mb-2">프로젝트 정보 수정</h2>
+              <input className="input" placeholder="실 이름" value={editForm.yarnName} onChange={e => setEditForm(f => ({ ...f, yarnName: e.target.value }))} />
+              <input className="input" placeholder="바늘 종류" value={editForm.needleType} onChange={e => setEditForm(f => ({ ...f, needleType: e.target.value }))} />
+              <input className="input" placeholder="바늘 사이즈(mm)" value={editForm.needleSize} onChange={e => setEditForm(f => ({ ...f, needleSize: e.target.value }))} />
+              <input className="input" placeholder="도안 이름" value={editForm.patternName} onChange={e => setEditForm(f => ({ ...f, patternName: e.target.value }))} />
+              <input className="input" placeholder="도안 링크" value={editForm.patternLinkUrl} onChange={e => setEditForm(f => ({ ...f, patternLinkUrl: e.target.value }))} />
+              <input className="input" placeholder="도안 PDF URL" value={editForm.patternPdfUrl} onChange={e => setEditForm(f => ({ ...f, patternPdfUrl: e.target.value }))} />
+              <div className="flex gap-2 mt-4">
+                <button className="fluffy-btn bg-pink-200 text-pink-600 font-bold px-4 py-2 rounded-xl" onClick={handleEditSave}>저장</button>
+                <button className="fluffy-btn bg-gray-200 text-gray-600 font-bold px-4 py-2 rounded-xl" onClick={() => setEditOpen(false)}>취소</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

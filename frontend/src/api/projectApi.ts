@@ -37,6 +37,25 @@ export const projectApi = {
   // 단수 증가/감소
   updateRows: (id: number, rows: number): Promise<Project> => {
     return apiClient.put<Project>(`/projects/${id}/rows`, { rows })
+  },
+
+  // 프로젝트 실/바늘/도안 정보만 단독 조회
+  getMaterialInfo: async (id: number): Promise<{
+    yarnName?: string;
+    needleType?: string;
+    needleSize?: number;
+    patternLinkUrl?: string;
+    patternPdfUrl?: string;
+  }> => {
+    const res = await apiClient.get<Project>(`/projects/${id}`);
+    const p = res.data;
+    return {
+      yarnName: p.yarnName,
+      needleType: p.needleType,
+      needleSize: p.needleSize,
+      patternLinkUrl: p.patternLinkUrl,
+      patternPdfUrl: p.patternPdfUrl
+    };
   }
 }
 

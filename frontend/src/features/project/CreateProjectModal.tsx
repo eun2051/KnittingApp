@@ -10,12 +10,12 @@ interface CreateProjectModalProps {
 const API_URL = 'http://localhost:8080/api/projects';
 
 const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalProps) => {
-  const [form, setForm] = useState({ name: '', yarnName: '', needleType: '', needleSize: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });
+  const [form, setForm] = useState({ name: '', yarnName: '', needleType: '', needleSize: '', patternName: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });
 
   const handleCreate = async () => {
     if (!form.name) return alert("작품 이름을 알려주세요!");
     try {
-      await axios.post(API_URL, {
+      const res = await axios.post(API_URL, {
         name: form.name,
         status: 'PLANNING',
         targetRows: Number(form.targetRows),
@@ -26,15 +26,18 @@ const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalPr
         yarnName: form.yarnName,
         needleType: form.needleType,
         needleSize: form.needleSize ? Number(form.needleSize) : null,
+        patternName: form.patternName,
         patternLinkUrl: form.patternLinkUrl,
         patternPdfUrl: form.patternPdfUrl,
         imageUrl: null,
         notes: null
       });
-      setForm({ name: '', yarnName: '', needleType: '', needleSize: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });
+      console.log('[DEBUG] 프로젝트 생성 응답:', res);
+      setForm({ name: '', yarnName: '', needleType: '', needleSize: '', patternName: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });
       onCreated(); // 부모에게 알림
       onClose();   // 창 닫기
     } catch (e) {
+      console.error('[ERROR] 프로젝트 생성 실패:', e);
       alert("생성 실패! 백엔드를 확인해주세요.");
     }
   };
@@ -81,6 +84,12 @@ const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalPr
           />
         </div>
         <div className="flex gap-2">
+          <input 
+            className={inputClass}
+            placeholder="도안 이름" 
+            value={form.patternName} 
+            onChange={e => setForm({...form, patternName: e.target.value})} 
+          />
           <input 
             className={inputClass}
             placeholder="도안 링크(URL)" 

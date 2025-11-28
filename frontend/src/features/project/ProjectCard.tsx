@@ -16,20 +16,6 @@ const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
         <h3 className="text-xl font-bold text-gray-800 group-hover:text-yarn-pink transition">
           {project.name}
         </h3>
-        {/* 실/바늘 정보 명시적으로 표시 */}
-        <div className="flex flex-col gap-1 mt-1">
-          {project.yarnName && (
-            <span className="text-pink-400 text-xs font-bold bg-white/60 rounded-full px-2 py-1 shadow">
-              실: {project.yarnName}
-            </span>
-          )}
-          {(project.needleType || project.needleSize) && (
-            <span className="text-pink-400 text-xs font-bold bg-white/60 rounded-full px-2 py-1 shadow">
-              바늘: {project.needleType}
-              {project.needleSize ? ` (${project.needleSize}mm)` : ''}
-            </span>
-          )}
-        </div>
         <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-yarn-mint inline-block"></span>
           {project.currentRows}단 진행 중 

@@ -7,6 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import java.io.File;
+import com.knittingapp.domain.Project;
+import com.knittingapp.repository.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 프로젝트 API Controller
@@ -16,6 +23,9 @@ import org.springframework.http.ResponseEntity;
 @RequestMapping("/api/projects")
 public class ProjectController {
     private final ProjectService projectService;
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
@@ -61,6 +71,28 @@ public class ProjectController {
     public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 프로젝트 이미지 반환 (없으면 기본 이미지 반환)
+     */
+    @GetMapping("/{id}/image")
+    public ResponseEntity<Resource> getProjectImage(@PathVariable Long id) {
+        Project project = projectRepository.findById(id).orElse(null);
+        String imageUrl = (project != null) ? project.getImageUrl() : null;
+        Resource imageResource;
+        if (imageUrl == null || imageUrl.isBlank()) {
+            // 기본 이미지 반환
+            imageResource = new ClassPathResource("static/cloud-pattern.svg");
+        } else {
+            File imageFile = new File(imageUrl);
+            if (imageFile.exists()) {
+                imageResource = new FileSystemResource(imageFile);
+            } else {
+                imageResource = new ClassPathResource("static/cloud-pattern.svg");
+            }
+        }
+        return ResponseEntity.ok().body(imageResource);
     }
 
     // 기타 CRUD API 추가 가능

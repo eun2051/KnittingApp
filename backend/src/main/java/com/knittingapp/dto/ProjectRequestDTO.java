@@ -21,5 +21,6 @@ public record ProjectRequestDTO(
     String patternLinkUrl,
     String patternPdfUrl,
     String imageUrl,
-    String notes
+    String notes,
+    String patternName
 ) {}
