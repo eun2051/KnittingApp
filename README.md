@@ -9,24 +9,23 @@
 - 👥 개인별 프로젝트 관리 (회원가입/로그인)
 - 💕 귀여운 핑크 테마 디자인
 
-## 🚀 배포하기 (친구들과 공유!)
+## 🌐 배포된 서비스
 
-**가장 쉬운 방법**: `QUICKSTART.md` 파일을 보세요!
+### 🎉 현재 배포 상태: **운영 중**
 
-### 간단 요약:
-1. GitHub에 코드 올리기
-2. Vercel에서 프론트엔드 배포 (무료!)
-3. Railway에서 백엔드+DB 배포 (무료!)
-4. 완료! URL 공유하기 🎉
+**프론트엔드**: https://knitting-app-drab.vercel.app  
+**백엔드**: https://knittingapp-backend.onrender.com
 
-**자세한 가이드**: `DEPLOY.md` 참고
+### 📌 배포 구조
+```
+사용자 → Vercel (React) → Render (Spring Boot) → Supabase (PostgreSQL)
+```
 
 ## 💻 로컬 개발
 
 ### 필요한 것들
 - Node.js 18+
 - Java 21
-- MySQL 8.0+
 
 ### 실행 방법
 
@@ -34,8 +33,6 @@
 ```bash
 mysql -u root -p
 CREATE DATABASE knitting;
-CREATE USER 'knitter'@'localhost' IDENTIFIED BY '2486!';
-GRANT ALL PRIVILEGES ON knitting.* TO 'knitter'@'localhost';
 ```
 
 #### 2. 백엔드 실행
@@ -52,7 +49,7 @@ npm run dev
 ```
 
 #### 4. 브라우저에서 열기
-http://localhost:5173
+http://localhost:5174
 
 ## 📁 프로젝트 구조
 ```
@@ -80,8 +77,9 @@ KnittingApp/
 - Java 21
 - Spring Boot 3.2.0
 - Spring Data JPA
-- MySQL 8.0
+- PostgreSQL (Supabase)
 - JWT 인증
+- Docker
 
 ### 프론트엔드
 - React 18
@@ -89,6 +87,11 @@ KnittingApp/
 - Tailwind CSS
 - Axios
 - Vite
+
+### 배포
+- **프론트엔드**: Vercel
+- **백엔드**: Render (Docker)
+- **데이터베이스**: Supabase (PostgreSQL)
 
 ## 📝 개발 가이드
 - 모든 개발 규칙은 `.github/copilot-instructions.md` 참고
@@ -101,13 +104,11 @@ KnittingApp/
 - **DB 연결 실패**: `backend/src/main/resources/application.yml` 확인
 - **빌드 실패**: 로컬에서 `npm run build` 또는 `./gradlew clean build` 테스트
 
-## 💕 기여하기
-이슈나 풀 리퀘스트는 언제나 환영합니다!
 
 ## 📄 라이선스
 MIT License
 
 ---
 
-**만든 사람**: Eun 🧶
-**목적**: 친구들과 함께 즐거운 뜨개 생활! 💕
+**만든 사람**: eun2051
+**목적**: 내가 쓸 뜨개앱 배포하기!
