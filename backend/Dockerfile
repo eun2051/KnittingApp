@@ -1,13 +1,15 @@
 # 1단계: Gradle로 빌드
 FROM gradle:8.5-jdk21 AS build
-WORKDIR /app
-COPY . .
+WORKDIR /build
+COPY build.gradle settings.gradle gradle.properties ./
+COPY gradle ./gradle
+COPY src ./src
 RUN gradle build -x test --no-daemon
 
 # 2단계: 실행 환경
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/build/libs/app-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /build/build/libs/*.jar app.jar
 
 # 환경변수 설정
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
