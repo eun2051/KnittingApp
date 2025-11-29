@@ -8,7 +8,8 @@ import jakarta.persistence.*;
 @Entity
 public class Yarn {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "yarn_seq")
+    @SequenceGenerator(name = "yarn_seq", sequenceName = "yarn_id_seq", allocationSize = 1)
     private Long id;
     private String name; // 실 이름
     private String brand; // 제조사

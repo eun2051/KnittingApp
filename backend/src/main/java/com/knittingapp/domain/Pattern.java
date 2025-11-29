@@ -8,7 +8,8 @@ import jakarta.persistence.*;
 @Entity
 public class Pattern {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pattern_seq")
+    @SequenceGenerator(name = "pattern_seq", sequenceName = "pattern_id_seq", allocationSize = 1)
     private Long id;
     private String name; // 도안 이름
     private String imageUrl; // 도안 이미지 URL

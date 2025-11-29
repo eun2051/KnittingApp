@@ -8,7 +8,8 @@ import jakarta.persistence.*;
 @Entity
 public class Needle {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "needle_seq")
+    @SequenceGenerator(name = "needle_seq", sequenceName = "needle_id_seq", allocationSize = 1)
     private Long id;
     private String type; // 대바늘/코바늘
     private Double size; // mm 단위

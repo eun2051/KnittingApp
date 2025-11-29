@@ -10,7 +10,8 @@ import java.time.LocalDate;
 @Entity
 public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_seq")
+    @SequenceGenerator(name = "project_seq", sequenceName = "project_id_seq", allocationSize = 1)
     private Long id;
 
     private String name;
