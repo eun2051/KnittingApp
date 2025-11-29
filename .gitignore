@@ -13,7 +13,8 @@
 .DS_Store
 Thumbs.db
 
-# IDE/에디터 설정
+# IDE/에디터 설정(팀 공통만 올릴 것)
+.vscode/
 .idea/
 .github/
 node_modules/
@@ -23,6 +24,7 @@ node_modules/
 
 # 환경설정/민감정보 예시
 *.env
+!.env.production
 application-local.yml
 application-prod.yml
 
