@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProjectList from './features/project/ProjectList';
 import ProjectDetailPage from './features/project/ProjectDetailPage';
 import RegisterPage from './features/auth/RegisterPage';
@@ -7,21 +6,14 @@ import LoginPage from './features/auth/LoginPage';
 import './index.css';
 
 // 인증 상태를 확인하는 컴포넌트
-const RequireAuth = ({ children }: { children: JSX.Element }) => {
+const RequireAuth = ({ children }: { children: React.ReactElement }) => {
   const token = localStorage.getItem('jwt');
   return token ? children : <Navigate to="/login" replace />;
 };
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    setIsAuthenticated(!!localStorage.getItem('jwt'));
-  }, []);
-
   // 인증 성공 시 목록으로 이동
   const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
     window.location.href = '/';
   };
 

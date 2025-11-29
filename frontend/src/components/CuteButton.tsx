@@ -1,6 +1,8 @@
-import React from 'react';
+interface CuteButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+}
 
-export default function CuteButton({ children, ...props }) {
+export default function CuteButton({ children, ...props }: CuteButtonProps) {
   return (
     <>
       <button

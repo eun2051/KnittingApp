@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Project } from '../../types';
+import { Project } from '../../types/project';
 import ProjectCard from './ProjectCard';
-import CreateProjectModal from './createProjectModal';
+import CreateProjectModal from './CreateProjectModal';
 
 const API_URL = 'http://localhost:8080/api/projects';
 

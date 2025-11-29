@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { apiClient } from './client'
 import { Project, ProjectRequest, DailyLog, DailyLogRequestDTO, DailyLogResponseDTO } from '../types/project'
 
 // API baseURL에서 중복된 /api 제거
@@ -92,18 +91,20 @@ export const projectApi = {
 // 작업 일지 API
 export const dailyLogApi = {
   // 프로젝트별 작업 일지 조회
-  getByProject: (projectId: number): Promise<DailyLog[]> => {
-    return apiClient.get<DailyLog[]>(`/projects/${projectId}/logs`)
+  getByProject: async (projectId: number): Promise<DailyLog[]> => {
+    const response = await apiClient.get<DailyLog[]>(`/projects/${projectId}/logs`)
+    return response.data
   },
 
   // 작업 일지 생성/업데이트 (같은 날짜면 업데이트)
-  createOrUpdate: (projectId: number, data: DailyLogRequestDTO): Promise<DailyLogResponseDTO> => {
-    return apiClient.post<DailyLogResponseDTO>(`/projects/${projectId}/logs`, data)
+  createOrUpdate: async (projectId: number, data: DailyLogRequestDTO): Promise<DailyLogResponseDTO> => {
+    const response = await apiClient.post<DailyLogResponseDTO>(`/projects/${projectId}/logs`, data)
+    return response.data
   },
 
   // 작업 일지 삭제
-  delete: (projectId: number, id: number): Promise<void> => {
-    return apiClient.delete<void>(`/projects/${projectId}/logs/${id}`)
+  delete: async (projectId: number, id: number): Promise<void> => {
+    await apiClient.delete<void>(`/projects/${projectId}/logs/${id}`)
   }
 }
 
