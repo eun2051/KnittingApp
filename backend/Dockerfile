@@ -24,4 +24,4 @@ ENV JAVA_OPTS="-Xmx512m -Xms256m"
 EXPOSE 8080
 
 # 실행 (빌드된 JAR 파일 직접 실행)
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar build/libs/app-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar build/libs/*.jar"]
