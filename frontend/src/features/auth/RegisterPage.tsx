@@ -17,7 +17,7 @@ const RegisterPage = ({ onRegistered }: { onRegistered: () => void }) => {
       return;
     }
     try {
-      await axios.post('/api/auth/register', {
+      await axios.post('auth/register', {
         email: form.email,
         password: form.password,
       });

@@ -14,7 +14,7 @@ const LoginPage = ({ onLoggedIn }: { onLoggedIn: () => void }) => {
         password: form.password.trim()
       };
       console.log('로그인 요청 데이터:', JSON.stringify(payload, null, 2));
-      const res = await axios.post('/api/auth/login', payload);
+      const res = await axios.post('auth/login', payload);
       const token = res.data.data.token;
       localStorage.setItem('jwt', token);
       onLoggedIn();
