@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 @Table(name = "users")  // PostgreSQL 예약어 'user' 충돌 방지
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @SequenceGenerator(name = "user_seq", sequenceName = "users_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(nullable = false, unique = true)
