@@ -3,9 +3,11 @@ const BASE_URL = 'http://localhost:8080/api'
 
 class ApiClient {
   private async request<T>(url: string, options: RequestInit = {}): Promise<T> {
+    const token = localStorage.getItem('jwt');
     const response = await fetch(`${BASE_URL}${url}`, {
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         ...options.headers,
       },
       ...options,

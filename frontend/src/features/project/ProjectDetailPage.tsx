@@ -50,15 +50,15 @@ const ProjectDetailPage = () => {
   }, [numericProjectId]);
 
   // 프로젝트 정보 콘솔 출력 (실/바늘 정보 확인용)
-  React.useEffect(() => {
-    if (project) {
-      console.log('[DEBUG] 프로젝트 실/바늘 정보:', {
-        yarnName: project.yarnName,
-        needleType: project.needleType,
-        needleSize: project.needleSize
-      });
-    }
-  }, [project]);
+  // React.useEffect(() => {
+  //   if (project) {
+  //     console.log('[DEBUG] 프로젝트 실/바늘 정보:', {
+  //       yarnName: project.yarnName,
+  //       needleType: project.needleType,
+  //       needleSize: project.needleSize
+  //     });
+  //   }
+  // }, [project]);
 
   // + 버튼 클릭 시 단수 증가
   const handleIncrement = () => {

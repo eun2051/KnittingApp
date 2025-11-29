@@ -22,10 +22,23 @@ const ProjectList = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('jwt');
+    navigate('/login');
+  };
+
   useEffect(() => { fetchProjects(); }, [location]);
 
   return (
-    <div className="w-full max-w-md mx-auto min-h-screen bg-gradient-to-br from-yarn-pink/40 via-white to-yarn-pink/20 p-8 flex flex-col items-center">
+    <div className="w-full max-w-md mx-auto min-h-screen bg-gradient-to-br from-yarn-pink/40 via-white to-yarn-pink/20 p-8 flex flex-col items-center relative">
+      {/* 로그아웃 버튼 */}
+      <button
+        onClick={handleLogout}
+        className="absolute top-4 right-4 px-4 py-2 bg-yarn-pink text-white text-sm rounded-lg font-bold hover:bg-yarn-pink/80 transition shadow-md"
+      >
+        로그아웃
+      </button>
+
       <header className="mb-8 mt-4 text-center">
         <h1 className="text-4xl font-bold text-yarn-pink mb-2 font-cute flex items-center justify-center gap-2">
           My Knitting <span className="text-4xl">🧶</span>

@@ -15,7 +15,7 @@ const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalPr
   const handleCreate = async () => {
     if (!form.name) return alert("작품 이름을 알려주세요!");
     try {
-      const res = await axios.post(API_URL, {
+      await axios.post(API_URL, {
         name: form.name,
         status: 'PLANNING',
         targetRows: Number(form.targetRows),
@@ -32,12 +32,10 @@ const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalPr
         imageUrl: null,
         notes: null
       });
-      console.log('[DEBUG] 프로젝트 생성 응답:', res);
       setForm({ name: '', yarnName: '', needleType: '', needleSize: '', patternName: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });
       onCreated(); // 부모에게 알림
       onClose();   // 창 닫기
     } catch (e) {
-      console.error('[ERROR] 프로젝트 생성 실패:', e);
       alert("생성 실패! 백엔드를 확인해주세요.");
     }
   };
