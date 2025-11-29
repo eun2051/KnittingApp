@@ -110,32 +110,24 @@ export const dailyLogApi = {
 
 // 특정 프로젝트의 작업 일지(날짜별 합산) 조회
 export async function fetchProjectDetail(projectId: number): Promise<Project> {
-  const res = await fetch(`/api/projects/${projectId}`);
-  if (!res.ok) throw new Error('프로젝트 조회 실패');
-  return await res.json();
+  const response = await apiClient.get<Project>(`/projects/${projectId}`);
+  return response.data;
 }
 
 export async function fetchProjectList(): Promise<Project[]> {
-  const res = await fetch('/api/projects');
-  if (!res.ok) throw new Error('프로젝트 목록 조회 실패');
-  return await res.json();
+  const response = await apiClient.get<Project[]>('/projects');
+  return response.data;
 }
 
 export async function fetchDailyLogs(projectId: number): Promise<DailyLog[]> {
-  const res = await fetch(`/api/projects/${projectId}/logs`);
-  if (!res.ok) throw new Error('작업 일지 조회 실패');
-  return await res.json();
+  const response = await apiClient.get<DailyLog[]>(`/projects/${projectId}/logs`);
+  return response.data;
 }
 
 // 오늘의 작업 일지 등록/수정(UPSERT)
 export async function upsertDailyLog(dto: DailyLogRequestDTO): Promise<DailyLogResponseDTO> {
-  const res = await fetch(`/api/projects/${dto.projectId}/logs`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dto),
-  });
-  if (!res.ok) throw new Error('작업 일지 등록/수정 실패');
-  return await res.json();
+  const response = await apiClient.post<DailyLogResponseDTO>(`/projects/${dto.projectId}/logs`, dto);
+  return response.data;
 }
 
 // 한글 주석으로 모든 함수 설명 추가
