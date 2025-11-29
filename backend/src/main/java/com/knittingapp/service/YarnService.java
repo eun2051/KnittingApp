@@ -32,10 +32,16 @@ public class YarnService {
             .collect(Collectors.toList());
     }
     public YarnResponseDTO getYarn(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("실 ID는 null일 수 없습니다.");
+        }
         Yarn yarn = yarnRepository.findById(id).orElseThrow();
         return toResponseDTO(yarn);
     }
     public YarnResponseDTO updateYarn(Long id, YarnRequestDTO dto) {
+        if (id == null) {
+            throw new IllegalArgumentException("실 ID는 null일 수 없습니다.");
+        }
         Yarn yarn = yarnRepository.findById(id).orElseThrow();
         yarn.setName(dto.name());
         yarn.setBrand(dto.brand());
@@ -45,6 +51,9 @@ public class YarnService {
         return toResponseDTO(saved);
     }
     public void deleteYarn(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("실 ID는 null일 수 없습니다.");
+        }
         yarnRepository.deleteById(id);
     }
     private YarnResponseDTO toResponseDTO(Yarn yarn) {

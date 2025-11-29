@@ -31,7 +31,6 @@ public class ProjectService {
         this.dailyLogRepository = dailyLogRepository;
     }
 
-    @SuppressWarnings("null")
     @Transactional
     public ProjectResponseDTO createProject(ProjectRequestDTO dto, String userEmail) {
         // 사용자 조회
@@ -110,14 +109,12 @@ public class ProjectService {
         if (id == null) {
             throw new IllegalArgumentException("프로젝트 ID는 null일 수 없습니다.");
         }
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         
         Project project = projectRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다. ID: " + id));
         
         // 프로젝트 소유자 확인
-        if (!project.getUser().getEmail().equals(userEmail)) {
+        if (project.getUser() == null || !project.getUser().getEmail().equals(userEmail)) {
             throw new IllegalArgumentException("해당 프로젝트에 대한 권한이 없습니다.");
         }
         
@@ -125,7 +122,6 @@ public class ProjectService {
         return toResponseDTO(project);
     }
     
-    @SuppressWarnings("null")
     @Transactional
     public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO dto, String userEmail) {
         if (id == null) {
@@ -177,6 +173,9 @@ public class ProjectService {
      */
     @Transactional
     public ProjectResponseDTO incrementRows(Long projectId, int rows) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("프로젝트 ID는 null일 수 없습니다.");
+        }
         if (rows <= 0) throw new IllegalArgumentException("증가할 단수는 1 이상이어야 합니다.");
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));

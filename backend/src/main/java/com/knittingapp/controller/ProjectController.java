@@ -104,6 +104,9 @@ public class ProjectController {
      */
     @GetMapping("/{id}/image")
     public ResponseEntity<Resource> getProjectImage(@PathVariable Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("프로젝트 ID는 null일 수 없습니다.");
+        }
         Project project = projectRepository.findById(id).orElse(null);
         String imageUrl = (project != null) ? project.getImageUrl() : null;
         Resource imageResource;

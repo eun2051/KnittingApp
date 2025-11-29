@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,6 +76,9 @@ public class DailyLogService {
      * saveAndFlush로 DB 즉시 반영
      */
     public DailyLog upsertDailyLog(Long projectId, LocalDate date, int rowsWorked) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("프로젝트 ID는 null일 수 없습니다.");
+        }
         DailyLog log = dailyLogRepository.findByProject_IdAndDate(projectId, date).orElse(null);
         if (log == null) {
             // DailyLog 생성 시 projectId 대신 Project 객체를 넘김
@@ -108,6 +110,9 @@ public class DailyLogService {
      */
     @Transactional
     public DailyLogResponseDTO upsertDailyLog(Long projectId, DailyLogRequestDTO dto) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("프로젝트 ID는 null일 수 없습니다.");
+        }
         System.out.println("[DEBUG] upsertDailyLog 호출: projectId=" + projectId + ", date=" + dto.date() + ", rowsWorked=" + dto.rowsWorked());
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
@@ -149,8 +154,12 @@ public class DailyLogService {
     /**
      * 작업 일지 UPSERT (날짜별 합산, 음수 입력 허용, 최종 단수 0 미만 불가)
      */
+    @SuppressWarnings("null")
     @Transactional
     public DailyLogResponseDTO upsertDailyLog(DailyLogRequestDTO dto) {
+        if (dto.projectId() == null) {
+            throw new IllegalArgumentException("프로젝트 ID는 null일 수 없습니다.");
+        }
         Project project = projectRepository.findById(dto.projectId())
             .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다."));
         LocalDate logDate = (dto.date() != null) ? dto.date() : LocalDate.now();
