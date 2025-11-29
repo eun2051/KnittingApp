@@ -1,0 +1,11 @@
+# 빌드/생성 파일은 언어 통계에서 제외
+backend/build/** linguist-generated=true
+frontend/dist/** linguist-generated=true
+*.jar linguist-generated=true
+
+# 문서 파일은 언어 통계에서 제외
+*.md linguist-documentation=true
+
+# TypeScript를 JavaScript보다 우선
+*.ts linguist-detectable=true
+*.tsx linguist-detectable=true
