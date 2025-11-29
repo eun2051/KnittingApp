@@ -23,5 +23,5 @@ ENV JAVA_OPTS="-Xmx512m -Xms256m"
 # 포트 노출
 EXPOSE 8080
 
-# 실행 (빌드된 JAR 파일 직접 실행)
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar build/libs/*.jar"]
+# 실행 (빌드된 JAR 파일 직접 실행, plain.jar 제외)
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar $(find build/libs -name '*.jar' ! -name '*-plain.jar' | head -n 1)"]
