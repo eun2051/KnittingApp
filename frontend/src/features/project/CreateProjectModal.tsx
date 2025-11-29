@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { projectApi } from '../../api/projectApi';
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -7,41 +7,31 @@ interface CreateProjectModalProps {
   onCreated: () => void; // 생성 후 목록 새로고침용
 }
 
-const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/projects`;
-
 const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalProps) => {
   const [form, setForm] = useState({ name: '', yarnName: '', needleType: '', needleSize: '', patternName: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });
 
   const handleCreate = async () => {
     if (!form.name) return alert("작품 이름을 알려주세요!");
     try {
-      const token = localStorage.getItem('jwt');
-      await axios.post(API_URL, {
+      await projectApi.create({
         name: form.name,
         status: 'PLANNING',
-        targetRows: Number(form.targetRows),
+        targetRows: Number(form.targetRows) || 0,
         currentRows: 0,
-        startDate: null,
-        endDate: null,
-        gauge: null,
-        yarnName: form.yarnName,
-        needleType: form.needleType,
-        needleSize: form.needleSize ? Number(form.needleSize) : null,
-        patternName: form.patternName,
-        patternLinkUrl: form.patternLinkUrl,
-        patternPdfUrl: form.patternPdfUrl,
-        imageUrl: null,
-        notes: null
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        gauge: undefined,
+        yarnName: form.yarnName || undefined,
+        needleType: form.needleType || undefined,
+        needleSize: form.needleSize ? Number(form.needleSize) : undefined,
+        patternName: form.patternName || undefined,
+        patternLinkUrl: form.patternLinkUrl || undefined,
+        patternPdfUrl: form.patternPdfUrl || undefined,
       });
       setForm({ name: '', yarnName: '', needleType: '', needleSize: '', patternName: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });
       onCreated(); // 부모에게 알림
       onClose();   // 창 닫기
     } catch (e) {
-      alert("생성 실패! 백엔드를 확인해주세요.");
+      console.error('프로젝트 생성 실패:', e);
+      alert("생성 실패! 다시 시도해주세요.");
     }
   };
 

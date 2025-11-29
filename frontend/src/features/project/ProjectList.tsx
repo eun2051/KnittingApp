@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import { Project } from '../../types/project';
+import { projectApi } from '../../api/projectApi';
 import ProjectCard from './ProjectCard';
 import CreateProjectModal from './CreateProjectModal';
-
-const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/projects`;
 
 const ProjectList = () => {
   const navigate = useNavigate();
@@ -15,15 +13,10 @@ const ProjectList = () => {
 
   const fetchProjects = async () => {
     try {
-      const token = localStorage.getItem('jwt');
-      const res = await axios.get(API_URL, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setProjects(res.data);
+      const data = await projectApi.getAll();
+      setProjects(data);
     } catch (e) {
-      console.error(e);
+      console.error('프로젝트 목록 조회 실패:', e);
     }
   };
 
