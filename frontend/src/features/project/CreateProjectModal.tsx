@@ -7,7 +7,7 @@ interface CreateProjectModalProps {
   onCreated: () => void; // 생성 후 목록 새로고침용
 }
 
-const API_URL = 'http://localhost:8080/api/projects';
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/projects`;
 
 const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalProps) => {
   const [form, setForm] = useState({ name: '', yarnName: '', needleType: '', needleSize: '', patternName: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });

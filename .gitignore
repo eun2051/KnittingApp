@@ -13,8 +13,7 @@
 .DS_Store
 Thumbs.db
 
-# IDE/에디터 설정(팀 공통만 올릴 것)
-.vscode/
+# IDE/에디터 설정
 .idea/
 .github/
 node_modules/

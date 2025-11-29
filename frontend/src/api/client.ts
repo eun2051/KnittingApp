@@ -1,5 +1,5 @@
 // API 클라이언트 설정
-const BASE_URL = 'http://localhost:8080/api'
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
 
 class ApiClient {
   private async request<T>(url: string, options: RequestInit = {}): Promise<T> {

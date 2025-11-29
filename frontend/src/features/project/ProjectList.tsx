@@ -5,7 +5,7 @@ import { Project } from '../../types/project';
 import ProjectCard from './ProjectCard';
 import CreateProjectModal from './CreateProjectModal';
 
-const API_URL = 'http://localhost:8080/api/projects';
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/projects`;
 
 const ProjectList = () => {
   const navigate = useNavigate();

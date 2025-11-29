@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { Project, ProjectRequest, DailyLog, DailyLogRequestDTO, DailyLogResponseDTO } from '../types/project'
 
-// API baseURL에서 중복된 /api 제거
+// API baseURL - 환경변수 사용 (배포 시 자동으로 변경됨)
 const apiClient = axios.create({
-  baseURL: '/api', // 반드시 /api만 한 번만 붙도록!
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
 });
 
 // JWT 토큰을 모든 요청에 자동 포함시키는 인터셉터 추가
