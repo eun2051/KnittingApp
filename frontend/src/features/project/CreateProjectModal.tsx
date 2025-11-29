@@ -15,6 +15,7 @@ const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalPr
   const handleCreate = async () => {
     if (!form.name) return alert("작품 이름을 알려주세요!");
     try {
+      const token = localStorage.getItem('jwt');
       await axios.post(API_URL, {
         name: form.name,
         status: 'PLANNING',
@@ -31,6 +32,10 @@ const CreateProjectModal = ({ isOpen, onClose, onCreated }: CreateProjectModalPr
         patternPdfUrl: form.patternPdfUrl,
         imageUrl: null,
         notes: null
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       setForm({ name: '', yarnName: '', needleType: '', needleSize: '', patternName: '', patternLinkUrl: '', patternPdfUrl: '', targetRows: '' });
       onCreated(); // 부모에게 알림
