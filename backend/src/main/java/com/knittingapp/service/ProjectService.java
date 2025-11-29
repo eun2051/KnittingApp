@@ -1,6 +1,7 @@
 package com.knittingapp.service;
 
 import com.knittingapp.domain.Project;
+import com.knittingapp.domain.User;
 import com.knittingapp.domain.Yarn;
 import com.knittingapp.domain.Needle;
 import com.knittingapp.domain.Pattern;
@@ -8,6 +9,7 @@ import com.knittingapp.dto.ProjectRequestDTO;
 import com.knittingapp.dto.ProjectResponseDTO;
 import com.knittingapp.dto.DailyLogResponseDTO;
 import com.knittingapp.repository.ProjectRepository;
+import com.knittingapp.repository.UserRepository;
 import com.knittingapp.repository.DailyLogRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +22,22 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectService {
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
     private final DailyLogRepository dailyLogRepository;
 
-    public ProjectService(ProjectRepository projectRepository, DailyLogRepository dailyLogRepository) {
+    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository, DailyLogRepository dailyLogRepository) {
         this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
         this.dailyLogRepository = dailyLogRepository;
     }
 
     @SuppressWarnings("null")
     @Transactional
-    public ProjectResponseDTO createProject(ProjectRequestDTO dto) {
+    public ProjectResponseDTO createProject(ProjectRequestDTO dto, String userEmail) {
+        // 사용자 조회
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        
         Project project = new Project();
         project.setName(dto.name());
         project.setStatus(dto.status());
@@ -40,6 +48,8 @@ public class ProjectService {
         project.setGauge(dto.gauge());
         project.setImageUrl(dto.imageUrl());
         project.setNotes(dto.notes());
+        project.setUser(user); // 사용자 설정
+        
         // 실 정보 저장
         if (dto.yarnName() != null && !dto.yarnName().isBlank()) {
             Yarn yarn = new Yarn();
@@ -66,8 +76,11 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectResponseDTO> getAllProjects() {
-        return projectRepository.findAll().stream()
+    public List<ProjectResponseDTO> getAllProjectsByUser(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        
+        return projectRepository.findByUser(user).stream()
             // Project 엔티티를 ProjectResponseDTO로 변환
             .map(project -> new ProjectResponseDTO(
                 project.getId(),
@@ -93,24 +106,41 @@ public class ProjectService {
     }
     
     @Transactional(readOnly = true)
-    public ProjectResponseDTO getProjectById(Long id) {
+    public ProjectResponseDTO getProjectById(Long id, String userEmail) {
         if (id == null) {
             throw new IllegalArgumentException("프로젝트 ID는 null일 수 없습니다.");
         }
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        
         Project project = projectRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다. ID: " + id));
+        
+        // 프로젝트 소유자 확인
+        if (!project.getUser().getEmail().equals(userEmail)) {
+            throw new IllegalArgumentException("해당 프로젝트에 대한 권한이 없습니다.");
+        }
+        
         // 작업 일지 리스트 조회 및 최신값 반영
         return toResponseDTO(project);
     }
     
     @SuppressWarnings("null")
     @Transactional
-    public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO dto) {
+    public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO dto, String userEmail) {
         if (id == null) {
             throw new IllegalArgumentException("프로젝트 ID는 null일 수 없습니다.");
         }
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        
         Project project = projectRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다. ID: " + id));
+        
+        // 프로젝트 소유자 확인
+        if (!project.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("해당 프로젝트에 대한 권한이 없습니다.");
+        }
         if (dto.name() != null) project.setName(dto.name());
         if (dto.status() != null) project.setStatus(dto.status());
         if (dto.startDate() != null) project.setStartDate(dto.startDate());

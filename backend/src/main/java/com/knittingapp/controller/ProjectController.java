@@ -3,9 +3,9 @@ package com.knittingapp.controller;
 import com.knittingapp.dto.ProjectRequestDTO;
 import com.knittingapp.dto.ProjectResponseDTO;
 import com.knittingapp.service.ProjectService;
+import com.knittingapp.util.JwtUtil;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ClassPathResource;
@@ -14,6 +14,7 @@ import java.io.File;
 import com.knittingapp.domain.Project;
 import com.knittingapp.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
 
 /**
  * 프로젝트 API Controller
@@ -31,24 +32,49 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+    // JWT 토큰에서 사용자 이메일 추출
+    private String getUserEmailFromToken(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("인증 토큰이 필요합니다.");
+        }
+        String token = authHeader.substring(7);
+        return JwtUtil.getEmail(token);
+    }
+
     @PostMapping
-    public ProjectResponseDTO createProject(@RequestBody ProjectRequestDTO dto) {
-        return projectService.createProject(dto);
+    public ProjectResponseDTO createProject(
+        @RequestHeader("Authorization") String authHeader,
+        @RequestBody ProjectRequestDTO dto
+    ) {
+        String userEmail = getUserEmailFromToken(authHeader);
+        return projectService.createProject(dto, userEmail);
     }
 
     @GetMapping
-    public List<ProjectResponseDTO> getAllProjects() {
-        return projectService.getAllProjects();
+    public List<ProjectResponseDTO> getAllProjects(
+        @RequestHeader("Authorization") String authHeader
+    ) {
+        String userEmail = getUserEmailFromToken(authHeader);
+        return projectService.getAllProjectsByUser(userEmail);
     }
 
     @GetMapping("/{id}")
-    public ProjectResponseDTO getProjectById(@PathVariable Long id) {
-        return projectService.getProjectById(id);
+    public ProjectResponseDTO getProjectById(
+        @RequestHeader("Authorization") String authHeader,
+        @PathVariable Long id
+    ) {
+        String userEmail = getUserEmailFromToken(authHeader);
+        return projectService.getProjectById(id, userEmail);
     }
 
     @PutMapping("/{id}")
-    public ProjectResponseDTO updateProject(@PathVariable Long id, @RequestBody ProjectRequestDTO dto) {
-        return projectService.updateProject(id, dto);
+    public ProjectResponseDTO updateProject(
+        @RequestHeader("Authorization") String authHeader,
+        @PathVariable Long id,
+        @RequestBody ProjectRequestDTO dto
+    ) {
+        String userEmail = getUserEmailFromToken(authHeader);
+        return projectService.updateProject(id, dto, userEmail);
     }
 
     /**

@@ -45,6 +45,10 @@ public class Project {
     @Column(length = 2000)
     private String notes; // 프로젝트 전체 메모/일지
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // 프로젝트 소유자
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<DailyLog> dailyLogs = new java.util.ArrayList<>();
 
@@ -62,9 +66,11 @@ public class Project {
     public Pattern getPattern() { return pattern; }
     public String getImageUrl() { return imageUrl; }
     public String getNotes() { return notes; }
+    public User getUser() { return user; }
     public java.util.List<DailyLog> getDailyLogs() { return dailyLogs; }
 
     // Setter 메서드 추가
+    public void setId(Long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setStatus(ProjectStatus status) { this.status = status; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
@@ -77,6 +83,7 @@ public class Project {
     public void setPattern(Pattern pattern) { this.pattern = pattern; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public void setNotes(String notes) { this.notes = notes; }
+    public void setUser(User user) { this.user = user; }
     public void setDailyLogs(java.util.List<DailyLog> dailyLogs) { this.dailyLogs = dailyLogs; }
 }
 
