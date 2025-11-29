@@ -4,17 +4,16 @@
 // 프로젝트 상태 타입
 export type ProjectStatus = 'PLANNING' | 'WIP' | 'FINISHED' | 'SUSPENDED';
 
-// 게이지 타입
+// 게이지 타입 (백엔드 Gauge 클래스와 일치)
 export interface Gauge {
-  stitchCount: number;  // 10cm당 코 수
-  rowCount: number;     // 10cm당 단 수
+  stitches: number;  // 10cm당 코 수
+  rows: number;      // 10cm당 단 수
 }
 
-// 프로젝트 타입
+// 프로젝트 타입 (백엔드 ProjectResponseDTO와 일치)
 export interface Project {
   id: number;
   name: string;
-  description?: string;
   status: ProjectStatus;
   // 전체 목표 단수
   targetRows: number;
@@ -22,9 +21,8 @@ export interface Project {
   currentRows: number;
   // 진행률 (0~100)
   progress: number;
-  // 게이지 정보 (10cm 기준 코/단)
-  gaugeSts: number; // 10cm 내 코 수
-  gaugeRows: number; // 10cm 내 단 수
+  // 게이지 정보 (Gauge 객체)
+  gauge?: Gauge;
   // 작업 일지 배열 (날짜별 합산)
   logs: DailyLog[];
   // 시작일

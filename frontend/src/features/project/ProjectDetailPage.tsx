@@ -113,10 +113,10 @@ const ProjectDetailPage = () => {
         endDate: project.endDate,
         targetRows: project.targetRows,
         currentRows: project.currentRows,
-        gauge: {
-          stitchCount: project.gaugeSts,
-          rowCount: project.gaugeRows
-        },
+        gauge: project.gauge ? {
+          stitches: project.gauge.stitches,
+          rows: project.gauge.rows
+        } : undefined,
         yarnName: editForm.yarnName,
         needleType: editForm.needleType,
         needleSize: editForm.needleSize ? Number(editForm.needleSize) : undefined,
