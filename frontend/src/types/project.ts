@@ -53,27 +53,23 @@ export interface Project {
   updatedAt?: string;
 }
 
-// 프로젝트 생성/수정 요청 타입
+// 프로젝트 생성/수정 요청 타입 (백엔드 ProjectRequestDTO와 일치)
 export interface ProjectRequest {
   name: string;
-  description?: string;
   status: ProjectStatus;
-  currentRows?: number;
-  targetRows: number;
-  gauge?: Gauge;
   startDate?: string;
   endDate?: string;
-  yarnId?: number;
-  needleId?: number;
-  patternId?: number;
-  imageUrl?: string;
-  notes?: string;
-  // 실/바늘/도안 정보 추가
+  targetRows?: number;
+  currentRows?: number;
+  gauge?: Gauge;  // { stitchCount, rowCount }
   yarnName?: string;
   needleType?: string;
   needleSize?: number;
+  patternName?: string;
   patternLinkUrl?: string;
   patternPdfUrl?: string;
+  imageUrl?: string;
+  notes?: string;
 }
 
 // 작업 일지 타입

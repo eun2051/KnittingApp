@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchProjectDetail, upsertDailyLog } from '../../api/projectApi';
+import { fetchProjectDetail, upsertDailyLog, projectApi } from '../../api/projectApi';
 import { Project, DailyLog } from '../../types/project';
 import '../../index.css';
 import ProjectProgressChart from './ProjectProgressChart';
@@ -106,27 +106,25 @@ const ProjectDetailPage = () => {
   const handleEditSave = async () => {
     if (!project) return;
     try {
-      await fetch(`/api/projects/${project.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: project.name,
-          status: project.status,
-          startDate: project.startDate,
-          endDate: project.endDate,
-          targetRows: project.targetRows,
-          currentRows: project.currentRows,
-          gaugeSts: project.gaugeSts,
-          gaugeRows: project.gaugeRows,
-          yarnName: editForm.yarnName,
-          needleType: editForm.needleType,
-          needleSize: editForm.needleSize ? Number(editForm.needleSize) : null,
-          patternName: editForm.patternName,
-          patternLinkUrl: editForm.patternLinkUrl,
-          patternPdfUrl: editForm.patternPdfUrl,
-          imageUrl: project.imageUrl,
-          notes: project.notes
-        })
+      await projectApi.update(project.id, {
+        name: project.name,
+        status: project.status,
+        startDate: project.startDate,
+        endDate: project.endDate,
+        targetRows: project.targetRows,
+        currentRows: project.currentRows,
+        gauge: {
+          stitchCount: project.gaugeSts,
+          rowCount: project.gaugeRows
+        },
+        yarnName: editForm.yarnName,
+        needleType: editForm.needleType,
+        needleSize: editForm.needleSize ? Number(editForm.needleSize) : undefined,
+        patternName: editForm.patternName,
+        patternLinkUrl: editForm.patternLinkUrl,
+        patternPdfUrl: editForm.patternPdfUrl,
+        imageUrl: project.imageUrl,
+        notes: project.notes
       });
       setEditOpen(false);
       refreshProject();
@@ -270,7 +268,7 @@ const ProjectDetailPage = () => {
             onClick={async () => {
               if (window.confirm('정말 삭제하시겠습니까?')) {
                 try {
-                  await fetch(`/api/projects/${project.id}`, { method: 'DELETE' });
+                  await projectApi.delete(project.id);
                   alert('삭제되었습니다.');
                   navigate('/', { state: { refresh: true } });
                 } catch (e) {
