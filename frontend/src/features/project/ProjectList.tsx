@@ -15,7 +15,12 @@ const ProjectList = () => {
 
   const fetchProjects = async () => {
     try {
-      const res = await axios.get(API_URL);
+      const token = localStorage.getItem('jwt');
+      const res = await axios.get(API_URL, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setProjects(res.data);
     } catch (e) {
       console.error(e);
