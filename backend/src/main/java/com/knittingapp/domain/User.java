@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
  * 회원(User) 엔티티
  */
 @Entity
+@Table(name = "users")  // PostgreSQL 예약어 'user' 충돌 방지
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
